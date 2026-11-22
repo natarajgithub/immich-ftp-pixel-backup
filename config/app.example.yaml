@@ -1,0 +1,25 @@
+# Global settings for immich-pixel-sync.
+# Copy to app.yaml (or mount as /config/app.yaml in Docker).
+
+# Shared Immich instance (all users).
+immich_url: http://192.168.2.15:2283
+
+# HTTP API / status UI / webhooks.
+http_host: 0.0.0.0
+http_port: 8080
+
+# SQLite database path (use a persistent volume in Docker).
+database_path: /data/sync.db
+
+# Default catch-up schedule (cron). Overridden per user in users.yaml when set.
+# Examples: "*/5 * * * *" every 5 minutes, "0 * * * *" hourly.
+catchup_cron: "*/5 * * * *"
+
+# If true, GET /ready fails when any enabled user's FTP is unreachable.
+ready_require_ftp: false
+
+# Max sync_events rows retained per user (oldest deleted).
+events_retain_per_user: 500
+
+# Path to users file (Docker: /config/users.yaml).
+users_file: /config/users.yaml

@@ -1,0 +1,38 @@
+[project]
+name = "immich-ftp-pixel-backup"
+version = "0.1.0"
+description = "Multi-user Immich → Pixel FTP sync for Google Photos backup bridge"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.32.0",
+  "httpx>=0.27.0",
+  "pyyaml>=6.0.2",
+  "apscheduler>=3.10.4",
+  "pydantic>=2.9.0",
+  "pydantic-settings>=2.6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.0",
+  "ruff>=0.8.0",
+]
+
+[project.scripts]
+immich-ftp-pixel-backup = "immich_ftp_pixel_backup.main:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+immich_ftp_pixel_backup = ["sql/*.sql"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
