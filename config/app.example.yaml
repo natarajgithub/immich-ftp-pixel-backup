@@ -1,8 +1,9 @@
-# Global settings for immich-pixel-sync.
+# Global settings for immich-ftp-pixel-backup.
 # Copy to app.yaml (or mount as /config/app.yaml in Docker).
+# Blank Docker volumes auto-seed similar defaults on first boot.
 
 # Shared Immich instance (all users).
-immich_url: http://192.168.2.15:2283
+immich_url: http://immich.example.local:2283
 
 # HTTP API / status UI / webhooks.
 http_host: 0.0.0.0

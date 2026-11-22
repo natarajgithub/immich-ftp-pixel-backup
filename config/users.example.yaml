@@ -1,28 +1,29 @@
 # Per-user Immich → Pixel FTP profiles.
 # Copy to users.yaml and fill secrets. Never commit real users.yaml.
+# Or leave empty (users: []) and configure via the web portal.
 
 users:
-  - id: nat
+  - id: alice
     enabled: true
     immich_api_key: "REPLACE_WITH_IMMICH_API_KEY"
     webhook_token: "REPLACE_WITH_RANDOM_TOKEN"
     # Optional: override global catchup_cron from app.yaml
     catchup_cron: "*/5 * * * *"
     ftp:
-      host: 192.168.2.199
+      host: pixel.example.local
       port: 12345
       username: photo
       password: "REPLACE_WITH_FTP_PASSWORD"
       # Must be a folder Google Photos backs up on that Pixel.
       remote_dir: /storage/emulated/0/DCIM/ImmichSync
 
-  # - id: partner
+  # - id: bob
   #   enabled: true
   #   immich_api_key: "..."
   #   webhook_token: "..."
   #   catchup_cron: "*/10 * * * *"
   #   ftp:
-  #     host: 192.168.2.200
+  #     host: pixel-bob.example.local
   #     port: 12345
   #     username: photo
   #     password: "..."

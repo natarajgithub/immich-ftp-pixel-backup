@@ -31,7 +31,7 @@ def _user(user_id: str, catchup_cron: str | None = None) -> dict:
         "immich_api_key": "key",
         "webhook_token": "tok",
         "ftp": {
-            "host": "192.168.2.199",
+            "host": "pixel.example.local",
             "port": 12345,
             "username": "photo",
             "password": "secret",

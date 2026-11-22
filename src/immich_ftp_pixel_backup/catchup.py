@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -85,7 +86,7 @@ def run_catchup_for_user(
             "uploaded": uploaded,
             "failed": failed,
         }
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         log.exception("catchup failed user=%s", user.id)
         repo.finish_catchup_run(
             run_id,

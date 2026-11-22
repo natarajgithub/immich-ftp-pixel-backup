@@ -12,7 +12,7 @@ Idempotent record of each Immich asset handled for a user.
 
 | Column | Notes |
 |--------|--------|
-| `user_id` | Slug from `users.yaml` (`nat`, …) |
+| `user_id` | Slug from `users.yaml` (`alice`, …) |
 | `asset_id` | Immich asset UUID |
 | `checksum` | Immich base64 SHA-1 when known |
 | `status` | `pending` → `uploading` → `uploaded` \| `failed` \| `skipped` |

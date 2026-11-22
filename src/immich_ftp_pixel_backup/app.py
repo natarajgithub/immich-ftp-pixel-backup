@@ -371,7 +371,8 @@ def build_app(
 
 
 def _row_to_dict(row: Any) -> dict[str, Any]:
-    return {k: row[k] for k in row.keys()}
+    # sqlite3.Row iterates values, not keys — use .keys() explicitly.
+    return {k: row[k] for k in row.keys()}  # noqa: SIM118
 
 
 def _user_status(state: AppState, user: UserConfig, *, rich: bool = False) -> dict[str, Any]:

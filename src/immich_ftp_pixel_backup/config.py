@@ -64,7 +64,7 @@ def _load_yaml(path: Path) -> dict[str, Any]:
         raise FileNotFoundError(f"Config not found: {path}")
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     if not isinstance(data, dict):
-        raise ValueError(f"Config root must be a mapping: {path}")
+        raise TypeError(f"Config root must be a mapping: {path}")
     return data
 
 

@@ -68,10 +68,10 @@ class FtpUploader:
             ftp.login(self._target.username, self._target.password)
             # Prefer passive mode for phone FTP servers.
             ftp.set_pasv(True)
-        except Exception as exc:  # noqa: BLE001 - map all connect/login failures
+        except Exception as exc:
             try:
                 ftp.close()
-            except Exception:  # noqa: BLE001
+            except Exception:  # noqa: BLE001, S110
                 pass
             raise FtpError(f"FTP connect/login failed: {exc}") from exc
         return ftp

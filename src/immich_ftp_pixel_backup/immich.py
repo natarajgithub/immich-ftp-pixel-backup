@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Any, Iterator
+from typing import Any, Self
 
 import httpx
 
@@ -59,7 +60,7 @@ class ImmichClient:
         if self._owns_client:
             self._client.close()
 
-    def __enter__(self) -> ImmichClient:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(self, *args: object) -> None:

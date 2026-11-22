@@ -5,7 +5,11 @@ from pathlib import Path
 import pytest
 import yaml
 
-from immich_ftp_pixel_backup.catchup import parse_cron, run_catchup_for_user, start_scheduler
+from immich_ftp_pixel_backup.catchup import (
+    parse_cron,
+    run_catchup_for_user,
+    start_scheduler,
+)
 from immich_ftp_pixel_backup.config import load_config
 from immich_ftp_pixel_backup.db import apply_migrations, connect
 from immich_ftp_pixel_backup.immich import ImmichAsset

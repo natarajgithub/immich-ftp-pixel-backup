@@ -65,7 +65,7 @@ def portal(tmp_path: Path):
                 "immich_api_key": "ikey",
                 "webhook_token": "secret",
                 "ftp": {
-                    "host": "192.168.2.199",
+                    "host": "pixel.example.local",
                     "port": 12345,
                     "username": "photo",
                     "password": "pw",
@@ -178,7 +178,7 @@ def test_status_includes_failed_asset(portal) -> None:
 
 
 def test_test_ftp_ok_and_fail(portal, monkeypatch) -> None:
-    client, _, _, _, _, app = portal
+    client, _, _, _, _, _app = portal
     from immich_ftp_pixel_backup import app as app_mod
 
     class OkUploader:

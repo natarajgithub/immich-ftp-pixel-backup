@@ -3,7 +3,10 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 
-from immich_ftp_pixel_backup.ftp_client import FtpError, FtpUploader, build_remote_filename
+from immich_ftp_pixel_backup.ftp_client import (
+    FtpError,
+    build_remote_filename,
+)
 from immich_ftp_pixel_backup.immich import ImmichAsset, ImmichClient, ImmichError
 from immich_ftp_pixel_backup.repository import AssetSource, SyncRepository
 

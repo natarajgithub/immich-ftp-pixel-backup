@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ftplib import error_perm
+from typing import Self
 
 import pytest
 
@@ -47,7 +48,7 @@ class FakeFTP:
         self.mkd_paths.append(path)
         self.dirs.add(path)
 
-    def storbinary(self, cmd: str, fp) -> None:  # noqa: ANN001
+    def storbinary(self, cmd: str, fp) -> None:
         if self.fail_store:
             raise error_perm("553 store failed")
         assert cmd.startswith("STOR ")
@@ -58,7 +59,7 @@ class FakeFTP:
         return None
 
     # Context manager support used by FtpUploader._connect as `with`
-    def __enter__(self) -> FakeFTP:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(self, *args: object) -> None:
@@ -76,10 +77,10 @@ def uploader(fake_ftp: FakeFTP) -> FtpUploader:
         return fake_ftp
 
     target = FtpTarget(
-        host="192.168.2.199",
+        host="pixel.example.local",
         port=12345,
         username="photo",
-        password="photo1!",
+        password="ftp-secret",
         remote_dir="/storage/emulated/0/DCIM/ImmichSync",
     )
     return FtpUploader(target, ftp_factory=factory)  # type: ignore[arg-type]
@@ -94,8 +95,8 @@ def test_build_remote_filename() -> None:
 def test_upload_creates_dirs_and_stores(uploader: FtpUploader, fake_ftp: FakeFTP) -> None:
     path = uploader.upload_bytes(b"hello", "pic__uuid.jpg")
     assert path == "/storage/emulated/0/DCIM/ImmichSync/pic__uuid.jpg"
-    assert fake_ftp.connected == ("192.168.2.199", 12345)
-    assert fake_ftp.logged_in == ("photo", "photo1!")
+    assert fake_ftp.connected == ("pixel.example.local", 12345)
+    assert fake_ftp.logged_in == ("photo", "ftp-secret")
     assert fake_ftp.pasv is True
     assert "/storage/emulated/0/DCIM/ImmichSync" in fake_ftp.dirs
     assert fake_ftp.stored == [("pic__uuid.jpg", b"hello")]

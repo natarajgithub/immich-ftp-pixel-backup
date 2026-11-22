@@ -86,7 +86,7 @@ def test_process_uploads(setup) -> None:
 
 
 def test_process_idempotent(setup) -> None:
-    repo, _immich, ftp, pipeline = setup
+    _repo, _immich, ftp, pipeline = setup
     pipeline.process_asset("nat", "a1", source="webhook", api_key="k")
     result = pipeline.process_asset("nat", "a1", source="catchup", api_key="k")
     assert result.status == "uploaded"

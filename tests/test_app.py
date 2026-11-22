@@ -9,9 +9,8 @@ from fastapi.testclient import TestClient
 from immich_ftp_pixel_backup.app import build_app
 from immich_ftp_pixel_backup.config import load_config
 from immich_ftp_pixel_backup.db import apply_migrations, connect
-from immich_ftp_pixel_backup.ftp_client import FtpError
 from immich_ftp_pixel_backup.immich import ImmichAsset, ImmichError
-from immich_ftp_pixel_backup.pipeline import AssetPipeline, ProcessResult
+from immich_ftp_pixel_backup.pipeline import AssetPipeline
 from immich_ftp_pixel_backup.repository import SyncRepository
 
 
@@ -61,7 +60,7 @@ def client(tmp_path: Path) -> TestClient:
                 "immich_api_key": "ikey",
                 "webhook_token": "secret",
                 "ftp": {
-                    "host": "192.168.2.199",
+                    "host": "pixel.example.local",
                     "port": 12345,
                     "username": "photo",
                     "password": "pw",
