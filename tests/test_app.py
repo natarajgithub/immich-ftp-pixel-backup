@@ -132,6 +132,23 @@ def test_webhook_auth_and_process(client: TestClient) -> None:
     assert r.json()["status"] == "uploaded"
 
 
+def test_webhook_immich_asset_v1_payload(client: TestClient) -> None:
+    """Immich AssetCreate webhook nests the id under data.asset.id."""
+    r = client.post(
+        "/hooks/nat/asset-create",
+        json={
+            "type": "AssetV1",
+            "trigger": "AssetCreate",
+            "data": {"asset": {"id": "a1", "type": "IMAGE"}},
+        },
+        headers={"X-Webhook-Token": "secret"},
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["asset_id"] == "a1"
+    assert body["status"] == "uploaded"
+
+
 def test_index_html(client: TestClient) -> None:
     r = client.get("/")
     assert r.status_code == 200

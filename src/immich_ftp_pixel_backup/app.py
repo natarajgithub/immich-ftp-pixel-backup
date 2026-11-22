@@ -211,14 +211,21 @@ def _user_status(state: AppState, user: UserConfig) -> dict[str, Any]:
 
 def _extract_asset_id(payload: dict[str, Any]) -> str | None:
     # Immich workflow webhook payloads vary; accept common shapes.
+    # Current Immich AssetCreate webhook:
+    #   {"type":"AssetV1","trigger":"AssetCreate","data":{"asset":{"id":"..."}}}
     for key in ("id", "assetId", "asset_id"):
         if payload.get(key):
             return str(payload[key])
-    asset = payload.get("asset") or payload.get("data") or {}
+    asset = payload.get("asset")
     if isinstance(asset, dict):
         for key in ("id", "assetId", "asset_id"):
             if asset.get(key):
                 return str(asset[key])
+    data = payload.get("data")
+    if isinstance(data, dict):
+        nested = _extract_asset_id(data)
+        if nested:
+            return nested
     return None
 
 
