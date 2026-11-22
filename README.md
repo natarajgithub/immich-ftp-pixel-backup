@@ -4,12 +4,10 @@ Multi-user **Immich → Pixel FTP** sync so each user’s phone can rely on Immi
 
 Repo: https://github.com/natarajgithub/immich-ftp-pixel-backup
 
-## Status (Phase 0–1 foundation)
+## Status
 
-- Project bootstrap in this repo
-- SQLite schema + migrations
-- Multi-user config (`app.yaml` / `users.yaml`) with **`catchup_cron`** (global + per-user)
-- Pytest for import, config, and DB migrations
+- Phase 0: bootstrap, config, schema
+- Phase 1: SQLite repository (CRUD, watermarks, events, catch-up runs)
 
 Next: Immich client → FTP client → pipeline → webhook → scheduler → UI → Docker → live deploy.
 
