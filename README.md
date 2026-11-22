@@ -8,8 +8,9 @@ Repo: https://github.com/natarajgithub/immich-ftp-pixel-backup
 
 - Phase 0: bootstrap, config, schema
 - Phase 1: SQLite repository (CRUD, watermarks, events, catch-up runs)
+- Phase 2: Immich API client (get/search/download) with mocked HTTP tests
 
-Next: Immich client → FTP client → pipeline → webhook → scheduler → UI → Docker → live deploy.
+Next: FTP client → pipeline → webhook → scheduler → UI → Docker → live deploy.
 
 ## Config
 
