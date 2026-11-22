@@ -244,6 +244,20 @@ class SyncRepository:
             ).fetchall()
         )
 
+    def recent_failed_assets(self, user_id: str, limit: int = 10) -> list[sqlite3.Row]:
+        return list(
+            self._conn.execute(
+                """
+                SELECT asset_id, last_error, attempts, updated_at, remote_path, original_filename
+                FROM sync_assets
+                WHERE user_id = ? AND status = 'failed'
+                ORDER BY updated_at DESC
+                LIMIT ?
+                """,
+                (user_id, limit),
+            ).fetchall()
+        )
+
     def start_catchup_run(self, user_id: str) -> int:
         with self._conn:
             cur = self._conn.execute(

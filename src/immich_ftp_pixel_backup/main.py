@@ -24,7 +24,10 @@ def main(argv: list[str] | None = None) -> None:
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
-    config = load_config(args.app_config, args.users_config)
+    users_arg = Path(args.users_config) if args.users_config else None
+    # load_config seeds missing YAML (empty users) so a blank /config volume can boot.
+    config = load_config(args.app_config, users_arg)
+    users_path = users_arg if users_arg is not None else Path(config.users_file)
     conn = connect(config.database_path)
     version = apply_migrations(conn)
     log.info(
@@ -33,6 +36,13 @@ def main(argv: list[str] | None = None) -> None:
         version,
         [u.id for u in config.enabled_users()],
     )
+    if not config.users:
+        log.info(
+            "no users configured yet — open the portal and add users under Settings "
+            "(config paths: app=%s users=%s)",
+            args.app_config,
+            users_path,
+        )
 
     if args.init_db:
         conn.close()
@@ -40,8 +50,17 @@ def main(argv: list[str] | None = None) -> None:
 
     repo = SyncRepository(conn)
     pipeline = create_pipeline(config, repo)
-    app = build_app(config, repo=repo, pipeline=pipeline, conn=conn)
-    scheduler = start_scheduler(config, repo=repo, pipeline=pipeline)
+    app = build_app(
+        config,
+        repo=repo,
+        pipeline=pipeline,
+        conn=conn,
+        app_config_path=args.app_config,
+        users_config_path=users_path,
+    )
+    state = app.state.sync
+    scheduler = start_scheduler(config, repo=repo, pipeline=pipeline, state=state)
+    state.scheduler = scheduler
 
     try:
         uvicorn.run(app, host=config.http_host, port=config.http_port, log_level="info")

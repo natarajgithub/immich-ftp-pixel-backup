@@ -95,7 +95,14 @@ def client(tmp_path: Path) -> TestClient:
         immich_factory=lambda _k: immich,
         ftp_factory=lambda _u: ftp,
     )
-    app = build_app(config, repo=repo, pipeline=pipeline, conn=conn)
+    app = build_app(
+        config,
+        repo=repo,
+        pipeline=pipeline,
+        conn=conn,
+        app_config_path=app_path,
+        users_config_path=users_path,
+    )
     return TestClient(app)
 
 
@@ -152,5 +159,6 @@ def test_webhook_immich_asset_v1_payload(client: TestClient) -> None:
 def test_index_html(client: TestClient) -> None:
     r = client.get("/")
     assert r.status_code == 200
-    assert "nat" in r.text
-    assert "immich-ftp-pixel-backup" in r.text
+    assert "immich" in r.text.lower()
+    assert client.get("/static/icon.svg").status_code == 200
+    assert client.get("/static/app.js").status_code == 200

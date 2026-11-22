@@ -1,30 +1,38 @@
 # immich-ftp-pixel-backup
 
+<img src="assets/icon.svg" width="64" height="64" alt="icon" />
+
 Multi-user **Immich → Pixel FTP** sync so each user’s phone can rely on Immich while a dedicated Pixel + Google Photos handles cloud backup.
 
 Repo: https://github.com/natarajgithub/immich-ftp-pixel-backup
 
-## Status
+## Features
 
-Phases 0–8 implemented with tests on `feat/phased-implementation` (PR #1).
-NAS test container listening on port **8088** (`/health`, `/status`, `/`).
+- Per-user Immich API key + webhook + FTP target
+- AssetCreate webhook + catch-up cron
+- **Web portal** at `/` — dashboard, YAML config editor, FTP test, live status (2s poll)
+- SQLite state + Docker image
 
-Still needed for end-to-end photo sync: real Immich API key in `users.yaml` + Immich AssetCreate workflow.
+LAN-only by design: the portal shows secrets and has **no login**. Do not expose port 8088 to the internet.
 
 ## Config
 
-1. Copy `config/app.example.yaml` → `config/app.yaml`
-2. Copy `config/users.example.yaml` → `config/users.yaml` and fill secrets
+YAML on disk (edited by the portal or by hand). Docker must mount `/config` **read-write**.
 
-### Catch-up cron
+**Blank volume bootstrap:** if `/config/app.yaml` or `/config/users.yaml` are missing on startup, the process writes a seed (`immich_url: http://127.0.0.1:2283`, empty `users: []`) and continues. Existing files are never overwritten. Open the portal → Settings to set Immich URL and add users.
 
-- **Global default:** `catchup_cron` in `app.yaml` (e.g. `"*/5 * * * *"`)
-- **Per user:** optional `catchup_cron` in `users.yaml` overrides the global value
+Optional manual seed from examples:
 
-### Webhook (planned)
+```bash
+cp config/app.example.yaml runtime-config/app.yaml
+cp config/users.example.yaml runtime-config/users.yaml
+```
 
-`POST /hooks/{user_id}/asset-create` with `X-Webhook-Token`  
-Immich: **Utilities → Workflows** → trigger `AssetCreate` → webhook action.
+### Webhook
+
+`POST /hooks/{user_id}/asset-create` with header `X-Webhook-Token`  
+Immich: **Utilities → Workflows** → trigger `AssetCreate` → webhook action.  
+URL must be bare (`http://host:8088/hooks/{user}/asset-create`) — do not put `POST` in the URL field.
 
 ## Develop
 
@@ -34,21 +42,26 @@ pip install -e ".[dev]"
 pytest
 ```
 
-Init DB only:
+```bash
+immich-ftp-pixel-backup --app-config config/app.yaml --users-config config/users.yaml
+```
+
+## Docker
 
 ```bash
-cp config/app.example.yaml config/app.yaml
-cp config/users.example.yaml config/users.yaml
-# edit database_path / secrets
-immich-ftp-pixel-backup --app-config config/app.yaml --init-db
+docker compose up -d --build
+# portal: http://localhost:8088/
 ```
+
+NAS overlay example: `docker-compose.nas.yml` (maps appdata config/data, host 8088).
 
 ## Layout
 
 ```
-config/          app + users examples
-sql/             migrations (also packaged under src/.../sql)
+assets/icon.svg
+config/          examples
 src/immich_ftp_pixel_backup/
-docs/
+  static/        portal UI
+  sql/
 tests/
 ```

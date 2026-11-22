@@ -1,0 +1,7 @@
+services:
+  sync:
+    ports:
+      - "8088:8080"
+    volumes:
+      - /mnt/user/appdata/immich-ftp-pixel-backup/config:/config
+      - /mnt/user/appdata/immich-ftp-pixel-backup/data:/data

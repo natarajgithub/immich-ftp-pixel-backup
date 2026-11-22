@@ -31,7 +31,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.setuptools.package-data]
-immich_ftp_pixel_backup = ["sql/*.sql"]
+immich_ftp_pixel_backup = ["sql/*.sql", "static/*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

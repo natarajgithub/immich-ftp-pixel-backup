@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -10,6 +10,9 @@ from immich_ftp_pixel_backup.config import AppConfig, UserConfig
 from immich_ftp_pixel_backup.immich import ImmichClient
 from immich_ftp_pixel_backup.pipeline import AssetPipeline
 from immich_ftp_pixel_backup.repository import SyncRepository
+
+if TYPE_CHECKING:
+    from immich_ftp_pixel_backup.app import AppState
 
 log = logging.getLogger(__name__)
 
@@ -102,28 +105,77 @@ def run_catchup_for_user(
         }
 
 
+def schedule_catchup_jobs(
+    scheduler: BackgroundScheduler,
+    *,
+    config: AppConfig,
+    repo: SyncRepository,
+    pipeline: AssetPipeline,
+    state: AppState | None = None,
+) -> None:
+    """Replace all catchup:* jobs from current enabled users."""
+    for job in list(scheduler.get_jobs()):
+        if str(job.id).startswith("catchup:"):
+            job.remove()
+
+    users = (state.config if state is not None else config).enabled_users()
+    for user in users:
+        uid = user.id
+        cron = (state.config if state is not None else config).catchup_cron_for(user)
+        trigger = parse_cron(cron)
+
+        def _job(user_id: str = uid) -> None:
+            if state is not None:
+                current = state.config.user(user_id)
+                if current is None or not current.enabled:
+                    return
+                run_catchup_for_user(
+                    current,
+                    config=state.config,
+                    repo=state.repo,
+                    pipeline=state.pipeline,
+                )
+            else:
+                # Legacy path used by unit tests (static config/pipeline).
+                match = next((u for u in config.enabled_users() if u.id == user_id), None)
+                if match is None:
+                    return
+                run_catchup_for_user(match, config=config, repo=repo, pipeline=pipeline)
+
+        scheduler.add_job(
+            _job,
+            trigger=trigger,
+            id=f"catchup:{uid}",
+            replace_existing=True,
+            max_instances=1,
+            coalesce=True,
+        )
+        log.info("scheduled catchup user=%s cron=%s", uid, cron)
+
+
 def start_scheduler(
     config: AppConfig,
     *,
     repo: SyncRepository,
     pipeline: AssetPipeline,
+    state: AppState | None = None,
 ) -> BackgroundScheduler:
     scheduler = BackgroundScheduler()
-    for user in config.enabled_users():
-        cron = config.catchup_cron_for(user)
-        trigger = parse_cron(cron)
-
-        def _job(u: UserConfig = user) -> None:
-            run_catchup_for_user(u, config=config, repo=repo, pipeline=pipeline)
-
-        scheduler.add_job(
-            _job,
-            trigger=trigger,
-            id=f"catchup:{user.id}",
-            replace_existing=True,
-            max_instances=1,
-            coalesce=True,
-        )
-        log.info("scheduled catchup user=%s cron=%s", user.id, cron)
+    schedule_catchup_jobs(scheduler, config=config, repo=repo, pipeline=pipeline, state=state)
     scheduler.start()
     return scheduler
+
+
+def next_catchup_run(scheduler: BackgroundScheduler | None, user_id: str) -> str | None:
+    if scheduler is None:
+        return None
+    job = scheduler.get_job(f"catchup:{user_id}")
+    if job is None or job.next_run_time is None:
+        return None
+    return job.next_run_time.isoformat()
+
+
+def job_ids(scheduler: BackgroundScheduler | None) -> list[str]:
+    if scheduler is None:
+        return []
+    return [str(j.id) for j in scheduler.get_jobs()]

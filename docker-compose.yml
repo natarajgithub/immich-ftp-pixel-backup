@@ -9,7 +9,7 @@ services:
     ports:
       - "${HTTP_PORT:-8088}:8080"
     volumes:
-      - ${CONFIG_ROOT:-./runtime-config}:/config:ro
+      - ${CONFIG_ROOT:-./runtime-config}:/config
       - ${DATA_ROOT:-./runtime-data}:/data
     environment:
       TZ: ${TZ:-America/Toronto}

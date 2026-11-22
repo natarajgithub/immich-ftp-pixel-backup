@@ -39,6 +39,18 @@ class FtpUploader:
         with self._connect() as ftp:
             ftp.pwd()
 
+    def test_connection(self) -> dict[str, str]:
+        """Login and ensure remote_dir is reachable (create if missing)."""
+        with self._connect() as ftp:
+            self._ensure_dir(ftp, self._target.remote_dir)
+            pwd = ftp.pwd()
+        return {
+            "ok": "true",
+            "host": f"{self._target.host}:{self._target.port}",
+            "remote_dir": self._target.remote_dir,
+            "pwd": pwd,
+        }
+
     def upload_bytes(self, data: bytes, remote_filename: str) -> str:
         remote_path = posixpath.join(self._target.remote_dir.rstrip("/"), remote_filename)
         with self._connect() as ftp:
