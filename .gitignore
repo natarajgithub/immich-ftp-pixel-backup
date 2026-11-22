@@ -5,8 +5,10 @@ config/users.yaml
 .env.*
 !.env.example
 
-# Data
+# Data / local docker smoke
 data/
+runtime-config/
+runtime-data/
 *.db
 *.db-journal
 *.db-wal
