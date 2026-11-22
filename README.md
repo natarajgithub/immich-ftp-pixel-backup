@@ -6,11 +6,10 @@ Repo: https://github.com/natarajgithub/immich-ftp-pixel-backup
 
 ## Status
 
-- Phase 0: bootstrap, config, schema
-- Phase 1: SQLite repository (CRUD, watermarks, events, catch-up runs)
-- Phase 2: Immich API client (get/search/download) with mocked HTTP tests
+Phases 0–8 implemented with tests on `feat/phased-implementation` (PR #1).
+NAS test container listening on port **8088** (`/health`, `/status`, `/`).
 
-Next: FTP client → pipeline → webhook → scheduler → UI → Docker → live deploy.
+Still needed for end-to-end photo sync: real Immich API key in `users.yaml` + Immich AssetCreate workflow.
 
 ## Config
 
