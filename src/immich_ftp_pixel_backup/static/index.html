@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>immich-ftp-pixel-backup</title>
+    <link rel="icon" href="/static/icon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Sora:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <img src="/static/icon.svg" alt="" />
+          <div>
+            <h1>immich → pixel</h1>
+            <p>LAN sync portal · YAML config · live status</p>
+          </div>
+        </div>
+        <nav class="nav" aria-label="Primary">
+          <button type="button" class="active" data-tab="dashboard">Dashboard</button>
+          <button type="button" data-tab="settings">Settings</button>
+        </nav>
+        <div class="live" title="Status refreshes every 2s while this tab is visible">
+          <span class="dot" aria-hidden="true"></span>
+          live
+        </div>
+      </header>
+
+      <section id="panel-dashboard" class="panel active">
+        <div id="dashboard"></div>
+      </section>
+
+      <section id="panel-settings" class="panel">
+        <form id="form-app" class="form-panel">
+          <h2>App settings</h2>
+          <div class="form-grid">
+            <label>Immich URL <input id="app-immich-url" required placeholder="http://immich.example.local:2283" /></label>
+            <label>Default catch-up cron <input id="app-catchup-cron" required placeholder="*/5 * * * *" /></label>
+            <label>Events retain / user <input id="app-events-retain" type="number" min="50" step="1" /></label>
+            <label class="check"><input id="app-ready-ftp" type="checkbox" /> Require FTP for /ready</label>
+          </div>
+          <div class="actions">
+            <button class="btn" type="submit">Save app settings</button>
+          </div>
+        </form>
+
+        <div class="form-panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+            <h2 style="margin:0">Users</h2>
+            <button class="btn" type="button" id="btn-new-user">Add user</button>
+          </div>
+          <div id="user-list" style="margin-top:1rem"></div>
+        </div>
+
+        <form id="form-user" class="form-panel">
+          <h2 id="user-form-title">Add user</h2>
+          <div class="form-grid">
+            <label>User id <input id="user-id" required pattern="[a-z0-9][a-z0-9_-]*" placeholder="aarthy" /></label>
+            <label class="check"><input id="user-enabled" type="checkbox" checked /> Enabled</label>
+            <label>Immich API key <input id="user-api-key" required autocomplete="off" /></label>
+            <label>Webhook token <input id="user-webhook" required autocomplete="off" /></label>
+            <label>Catch-up cron (optional) <input id="user-cron" placeholder="*/5 * * * *" /></label>
+            <label>FTP host <input id="ftp-host" required /></label>
+            <label>FTP port <input id="ftp-port" type="number" value="12345" /></label>
+            <label>FTP username <input id="ftp-user" required /></label>
+            <label>FTP password <input id="ftp-pass" type="password" required autocomplete="off" /></label>
+            <label>Remote dir <input id="ftp-dir" required /></label>
+          </div>
+          <div class="actions">
+            <button class="btn" type="submit">Save user</button>
+            <button class="btn ghost" type="button" id="btn-test-form-ftp">Test FTP</button>
+            <button class="btn danger" type="button" id="btn-delete-user" hidden>Delete</button>
+          </div>
+        </form>
+      </section>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
